@@ -1,0 +1,1 @@
+#include "komorka.h"

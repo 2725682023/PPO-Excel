@@ -101,48 +101,42 @@ string arkusz::getRodzajKomorki(int wiersz, int kolumna) const{
 
 float arkusz::sum(int wiersz1, int kolumna1, int wiersz2, int kolumna2) const{
     float sum = 0.0f;
-    for (int i = wiersz1; i <= wiersz2; i++)
-    {
-        for (int j = kolumna1; j <= kolumna2; j++)
-        {
-            if (wiersz1 < komorki.size() && kolumna1 < komorki[wiersz1].size() && komorki[wiersz1][kolumna1] != nullptr)
-            {
-                if (dynamic_cast<komorkaflaot *>(komorki[wiersz1][kolumna1]))
-                {
-                    sum += komorki[wiersz1][kolumna1]->getWartoscFloat();
-                }
-                else if (dynamic_cast<komorkaString *>(komorki[wiersz1][kolumna1]))
-                {
-                    return 0.0f;
+    string sklejenie = "";
+    if (wiersz1 < komorki.size() && kolumna1 < komorki[wiersz1].size() && komorki[wiersz1][kolumna1] != nullptr && wiersz2 <= komorki.size() && kolumna2 <= komorki[wiersz2].size()) {
+        for (int i = wiersz1; i <= wiersz2; i++) {
+            for (int j = kolumna1; j <= kolumna2; j++) {
+                if(dynamic_cast<komorkaflaot *>(komorki[i][j])){
+                    sum += komorki[i][j]->getWartoscFloat();
+                } else if(dynamic_cast<komorkaString *>(komorki[i][j])){
+                    sklejenie += komorki[i][j]->getWartoscString();
                 }
             }
         }
+    } else {
+        cout << "Nie ma takich komorek, wyszedłes poza arkusz!!!" << endl;
     }
     return sum;
 }
 
 float arkusz::srednia(int wiersz1, int kolumna1, int wiersz2, int kolumna2) const{
     float sum = 0.0f;
-    int count = 0;
-    for (int i = wiersz1; i <= wiersz2; i++)
-    {
-        for (int j = kolumna1; j <= kolumna2; j++)
-        {
-            if (wiersz1 < komorki.size() && kolumna1 < komorki[wiersz1].size() && komorki[wiersz1][kolumna1] != nullptr)
-            {
-                if (dynamic_cast<komorkaflaot *>(komorki[wiersz1][kolumna1]))
-                {
-                    sum += komorki[wiersz1][kolumna1]->getWartoscFloat();
-                    count++;
-                }
-                else if (dynamic_cast<komorkaString *>(komorki[wiersz1][kolumna1]))
-                {
+    int ilosc = 0;
+    if (wiersz1 < komorki.size() && kolumna1 < komorki[wiersz1].size() && komorki[wiersz1][kolumna1] != nullptr && wiersz2 <= komorki.size() && kolumna2 <= komorki[wiersz2].size()) {
+        for (int i = wiersz1; i <= wiersz2; i++) {
+            for (int j = kolumna1; j <= kolumna2; j++) {
+                if(dynamic_cast<komorkaflaot *>(komorki[i][j])){
+                    sum += komorki[i][j]->getWartoscFloat();
+                    ilosc++;
+                } else if(dynamic_cast<komorkaString *>(komorki[i][j])){
                     return 0.0f;
                 }
             }
         }
+    } else {
+        cout << "Nie ma takich komorek, wyszedłes poza arkusz!!!" << endl;
     }
-    return sum/count;
+    float srednia = sum / ilosc;
+    return srednia;
 }
 void arkusz::zapiszArkusz(string nazwa) const{
     ofstream file;
