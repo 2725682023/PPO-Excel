@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void menu() {
+void menuglowne() {
     cout << "----------Menu----------" << endl;
     cout << "1. Wyswietl" << endl;
     cout << "2. Dodaj kolumne" << endl;
@@ -13,24 +13,49 @@ void menu() {
     cout << "6. Ustwa zawartosc komorki" << endl;
     cout << "7. Suma" << endl;
     cout << "8. Srednia" << endl;
-    cout << "9. Wyjdz" << endl;
+    cout << "9. Zapisz arkusz do pliku" << endl;
+    cout << "10. Wyjdz" << endl;
     cout << "------------------------" << endl;
 }
 int main()
 {
     arkusz arkusz1;
-    arkusz1.dodajKolune();
-    arkusz1.dodajKolune();
-    arkusz1.dodajKolune();
-    arkusz1.dodajWiersz();
-    arkusz1.dodajWiersz();
-    arkusz1.dodajWiersz();
 
-    int x = 0;
+    int x;
     cout << "Witaj w programie!!!" << endl;
-    cout << "Twoj arkusz ma na start 3 kolumny i 3 wiersze bez zadnych danych." << endl;
+    cout << endl;
+    cout << "Czy chcesz wczytac arkusz z pliku? (1 - tak, 0 - nie)" << endl;
+    cin >> x;
+    switch (x) {
+        case 1: {
+            string nazwaPliku;
+            cout << "Podaj nazwe pliku: " << endl;
+            cin >> nazwaPliku;
+            arkusz1.wczytajArkusz(nazwaPliku);
+
+            cout << "Wczytany arkusz: " << endl;
+            arkusz1.wyswietl();
+            break;
+        }
+        case 0: {
+            arkusz1.dodajKolune();
+            arkusz1.dodajKolune();
+            arkusz1.dodajKolune();
+            arkusz1.dodajWiersz();
+            arkusz1.dodajWiersz();
+            arkusz1.dodajWiersz();
+
+            cout << "Twoj arkusz ma na start 3 kolumny i 3 wiersze bez zadnych danych." << endl;
+            break;
+        }
+        default: {
+            cout << "Nie ma takiej opcji" << endl;
+            break;
+        }
+    }
+    x = 0;
     while(x == 0){
-        menu();
+        menuglowne();
         int wybor;
         cout << endl;
         cout << "Wybierz opcje z powyzszego menu: " << endl;
@@ -105,6 +130,13 @@ int main()
                 break;
             }
             case 9: {
+                string nazwa;
+                cout << "Podaj nazwe pliku: " << endl;
+                cin >> nazwa;
+                arkusz1.zapiszArkusz(nazwa);
+                break;
+            }
+            case 10: {
                 x = 1;
                 break;
             }

@@ -159,13 +159,13 @@ void arkusz::zapiszArkusz(string nazwa) const{
 }
 
 void arkusz::wczytajArkusz(string nazwa){
-    ifstream file;
-    file.open(nazwa);
-    if (file.is_open())
+    ifstream plik;
+    plik.open(nazwa);
+    if (plik.is_open())
     {
 
         string line;
-        getline(file, line);
+        getline(plik, line);
         stringstream ss(line);
         string token;
         vector<string> tokens;
@@ -181,7 +181,7 @@ void arkusz::wczytajArkusz(string nazwa){
             komorki[i].resize(kolumny);
         }
 
-        while (getline(file, line))
+        while (getline(plik, line))
         {
             stringstream ss(line);
             vector<string> tokens;
@@ -207,10 +207,8 @@ void arkusz::wczytajArkusz(string nazwa){
                 komorki[wiersz][kolumna]->setWartosc("");
             }
         }
-
-
     }
-    file.close();
+    plik.close();
 }
 
 arkusz::~arkusz() {
