@@ -1,8 +1,30 @@
-#include <fstream>
-#include <sstream>
 #include "arkusz.h"
 
-bool arkusz::czyLiczba(const string& wartosc) const{
+void Arkusz::dodajKolumne() {
+    for(int i = 0; i < arkusz.size(); i++){
+        arkusz[i].resize(arkusz[i].size() + 1, nullptr);
+    }
+}
+
+void Arkusz::dodajWiersz() {
+    arkusz.resize(arkusz.size() + 1);
+}
+
+void Arkusz::usunKolumne(int kolumna) {
+    if(kolumna < arkusz[0].size()){
+        for(int i = 0; i < arkusz.size(); i++){
+            arkusz[i].erase(arkusz[i].begin() + kolumna);
+        }
+    }
+}
+
+void Arkusz::usunWiersz(int wiersz) {
+    if(wiersz < arkusz.size()){
+        arkusz.erase(arkusz.begin() + wiersz);
+    }
+}
+
+bool Arkusz::czyLiczba(const std::string& wartosc) const{
     for(int i = 0; i < wartosc.length(); i++){
         if(!isdigit(wartosc[i])){
             return false;
@@ -11,146 +33,122 @@ bool arkusz::czyLiczba(const string& wartosc) const{
     return true;
 }
 
-void arkusz::setWartosc(int wiersz, int kolumna, const string &wartosc){
-    if(wiersz >= komorki.size()){
-        komorki.resize( wiersz + 1);
+void Arkusz::wprowadzDane(const std::string& wartosc, int wiersz, int kolumna) {
+    if(wiersz >= arkusz.size()){
+        arkusz.resize( wiersz + 1);
     }
-    if(kolumna >= komorki[wiersz].size()){
-        komorki[wiersz].resize( kolumna + 1, nullptr);
+    if(kolumna >= arkusz[wiersz].size()){
+        arkusz[wiersz].resize( kolumna + 1, nullptr);
     }
-    if(komorki[wiersz][kolumna] == nullptr){
+    if(arkusz[wiersz][kolumna] == nullptr){
         if(czyLiczba(wartosc)){
-            komorki[wiersz][kolumna] = new komorkaflaot();
+            arkusz[wiersz][kolumna] = new KomorkaFloat();
         } else {
-            komorki[wiersz][kolumna] = new komorkaString();
+            arkusz[wiersz][kolumna] = new KomorkaStringa();
         }
     }
-    komorki[wiersz][kolumna]->setWartosc(wartosc);
+    arkusz[wiersz][kolumna]->setWartosc(wartosc);
 }
 
-void arkusz::setWartosc(int wiersz, int kolumna, float wartosc){
-    if(wiersz >= komorki.size()){
-        komorki.resize( wiersz + 1);
-    }
-    if(kolumna >= komorki[wiersz].size()){
-        komorki[wiersz].resize( kolumna + 1, nullptr);
-    }
-    if(komorki[wiersz][kolumna] == nullptr){
-        komorki[wiersz][kolumna] = new komorkaflaot();
-    }
-    komorki[wiersz][kolumna]->setWartosc(wartosc);
-}
+std::string Arkusz::sumujZakres(int wiersz_pocz, int kolumna_pocz, int wiersz_kon, int kolumna_kon) {
+    if (wiersz_pocz >= 0 && wiersz_pocz < arkusz.size() && wiersz_kon >= 0 && wiersz_kon < arkusz.size() &&
+        kolumna_pocz >= 0 && kolumna_pocz < arkusz[0].size() && kolumna_kon >= 0 && kolumna_kon < arkusz[0].size()) {
+        bool isFloat = false;
+        bool isString = false;
+        float sumaFloat = 0.0f;
+        std::string sumaString = "";
 
-string arkusz::getWartoscString(int wiersz, int kolumna) const{
-    if(wiersz < komorki.size() && kolumna < komorki[wiersz].size() && komorki[wiersz][kolumna] != nullptr){
-        return komorki[wiersz][kolumna]->getWartoscString();
+        for (int wiersz = wiersz_pocz; wiersz <= wiersz_kon; ++wiersz) {
+            for (int kolumna = kolumna_pocz; kolumna <= kolumna_kon; ++kolumna) {
+                if (auto komorkaFloat = dynamic_cast<KomorkaFloat*>(arkusz[wiersz][kolumna])) {
+                    isFloat = true;
+                    sumaFloat += komorkaFloat->getFloatWartosc();
+                } else if (auto komorkaStringa = dynamic_cast<KomorkaStringa*>(arkusz[wiersz][kolumna])) {
+                    isString = true;
+                    sumaString += komorkaStringa->getWartosc();
+                } else {
+                    std::cout << "Błąd: Wybrany zakres zawiera komórki różnego typu." << std::endl;
+                    return "";
+                }
+            }
+        }
+
+        if (isFloat && isString) {
+            std::cout << "Błąd: Wybrany zakres zawiera komórki różnego typu." << std::endl;
+            return "";
+        } else if (isFloat) {
+            return std::to_string(sumaFloat);
+        } else if (isString) {
+            return sumaString;
+        }
+    } else {
+        std::cout << "Błąd: Nieprawidłowe współrzędne zakresu." << std::endl;
     }
+
     return "";
 }
 
-float arkusz::getWartoscFloat(int wiersz, int kolumna) const{
-    if(wiersz < komorki.size() && kolumna < komorki[wiersz].size() && komorki[wiersz][kolumna] != nullptr){
-        return komorki[wiersz][kolumna]->getWartoscFloat();
-    }
-    return 0.0f;
-}
-
-void arkusz::wyswietl() const{
-    for(int i = 0; i < komorki.size(); i++){
-        for(int j = 0; j < komorki[i].size(); j++){
-            cout << getWartoscString(i , j) << "\t\t";
+std::string Arkusz::sredniaZakres(int wiersz_pocz, int kolumna_pocz, int wiersz_kon, int kolumna_kon) {
+    float sum = 0.0f;
+    int ilosc = 0;
+    if (wiersz_pocz < arkusz.size() && kolumna_pocz < arkusz[wiersz_pocz].size() && arkusz[wiersz_pocz][kolumna_pocz] != nullptr && wiersz_kon <= arkusz.size() && kolumna_kon <= arkusz[wiersz_kon].size()) {
+        for (int i = wiersz_pocz; i <= wiersz_kon; i++) {
+            for (int j = kolumna_pocz; j <= kolumna_kon; j++) {
+                if(auto komorkaFloat = dynamic_cast<KomorkaFloat *>(arkusz[i][j])){
+                    sum += komorkaFloat->getFloatWartosc();
+                    ilosc++;
+                } else if(dynamic_cast<KomorkaStringa *>(arkusz[i][j])){
+                    std::cout << "W zakresie wystepuja komorki typu string" << std::endl;
+                    return "";
+                }
+            }
         }
-        cout << "\n\n";
+    } else {
+        std::cout << "Nie ma takich komorek, wyszedłes poza arkusz!!!" << std::endl;
     }
+    float srednia1 = sum / ilosc;
+
+    return std::to_string(srednia1);
 }
 
-void arkusz::usunWiersz(int wiersz){
-    if(wiersz < komorki.size()){
-        komorki.erase(komorki.begin() + wiersz);
-    }
-}
-
-void arkusz::usunKolumne(int kolumna){
-    if(kolumna < komorki[0].size()){
-        for(int i = 0; i < komorki.size(); i++){
-            komorki[i].erase(komorki[i].begin() + kolumna);
+void Arkusz::wypiszArkusz() {
+    for (const auto& wiersz : arkusz) {
+        for (const auto& komorka : wiersz) {
+            std::cout << komorka->getWartosc() << "\t";
         }
+        std::cout << std::endl;
     }
 }
 
-void arkusz::dodajWiersz(){
-    komorki.resize(komorki.size() + 1);
+void Arkusz::rozmiarArkusza() {
+    std::cout << "Liczba wierszy: " << arkusz.size() << std::endl;
+    std::cout << "Liczba kolumn: " << arkusz[0].size() << std::endl;
 }
 
-void arkusz::dodajKolune(){
-    for(int i = 0; i < komorki.size(); i++){
-        komorki[i].resize(komorki[i].size() + 1, nullptr);
-    }
-}
-
-string arkusz::getRodzajKomorki(int wiersz, int kolumna) const{
-    if(wiersz < komorki.size() && kolumna < komorki[wiersz].size() && komorki[wiersz][kolumna] != nullptr){
-        if( dynamic_cast<komorkaflaot *>(komorki[wiersz][kolumna])){
+std::string Arkusz::getRodzajKomorki(int wiersz, int kolumna) const{
+    if(wiersz < arkusz.size() && kolumna < arkusz[wiersz].size() && arkusz[wiersz][kolumna] != nullptr){
+        if( dynamic_cast<KomorkaFloat *>(arkusz[wiersz][kolumna])){
             return "komorkafloat";
-        } else if(dynamic_cast<komorkaString *>(komorki[wiersz][kolumna])){
+        } else if(dynamic_cast<KomorkaStringa *>(arkusz[wiersz][kolumna])){
             return "komorkaString";
         }
     }
     return "komorka";
 }
 
-float arkusz::sum(int wiersz1, int kolumna1, int wiersz2, int kolumna2) const{
-    float sum = 0.0f;
-    string sklejenie = "";
-    if (wiersz1 < komorki.size() && kolumna1 < komorki[wiersz1].size() && komorki[wiersz1][kolumna1] != nullptr && wiersz2 <= komorki.size() && kolumna2 <= komorki[wiersz2].size()) {
-        for (int i = wiersz1; i <= wiersz2; i++) {
-            for (int j = kolumna1; j <= kolumna2; j++) {
-                if(dynamic_cast<komorkaflaot *>(komorki[i][j])){
-                    sum += komorki[i][j]->getWartoscFloat();
-                } else if(dynamic_cast<komorkaString *>(komorki[i][j])){
-                    sklejenie += komorki[i][j]->getWartoscString();
-                }
-            }
-        }
-    } else {
-        cout << "Nie ma takich komorek, wyszedłes poza arkusz!!!" << endl;
-    }
-    return sum;
-}
-
-float arkusz::srednia(int wiersz1, int kolumna1, int wiersz2, int kolumna2) const{
-    float sum = 0.0f;
-    int ilosc = 0;
-    if (wiersz1 < komorki.size() && kolumna1 < komorki[wiersz1].size() && komorki[wiersz1][kolumna1] != nullptr && wiersz2 <= komorki.size() && kolumna2 <= komorki[wiersz2].size()) {
-        for (int i = wiersz1; i <= wiersz2; i++) {
-            for (int j = kolumna1; j <= kolumna2; j++) {
-                if(dynamic_cast<komorkaflaot *>(komorki[i][j])){
-                    sum += komorki[i][j]->getWartoscFloat();
-                    ilosc++;
-                } else if(dynamic_cast<komorkaString *>(komorki[i][j])){
-                    return 0.0f;
-                }
-            }
-        }
-    } else {
-        cout << "Nie ma takich komorek, wyszedłes poza arkusz!!!" << endl;
-    }
-    float srednia = sum / ilosc;
-    return srednia;
-}
-void arkusz::zapiszArkusz(string nazwa) const{
-    ofstream file;
+void Arkusz::zapiszArkusz(std:: string nazwa) const{
+    std::ofstream file;
     file.open(nazwa);
     if (file.is_open())
     {
-        file << komorki.size() << "," << komorki[0].size() << std::endl;
-        for (int i = 0; i < komorki.size(); i++)
+        file << arkusz.size() << "," << arkusz[0].size() << std::endl;
+        for (int i = 0; i < arkusz.size(); i++)
         {
-            for (int j = 0; j < komorki[i].size(); j++)
+            for (int j = 0; j < arkusz[i].size(); j++)
             {
-                if (komorki[i][j] != nullptr)
+                if (arkusz[i][j] != nullptr)
                 {
-                    file << getRodzajKomorki(i,j) << "," << komorki[i][j]->getWartoscString() << "," << i << "," << j << endl;
+                    file << getRodzajKomorki(i,j) << "," << arkusz[i][j]->getWartosc() << "," << i << "," << j << std::endl;
                 }
             }
         }
@@ -158,33 +156,33 @@ void arkusz::zapiszArkusz(string nazwa) const{
     file.close();
 }
 
-void arkusz::wczytajArkusz(string nazwa){
-    ifstream plik;
+void Arkusz::wczytajArkusz(std::string nazwa){
+    std::ifstream plik;
     plik.open(nazwa);
     if (plik.is_open())
     {
 
-        string line;
+        std::string line;
         getline(plik, line);
-        stringstream ss(line);
-        string token;
-        vector<string> tokens;
+        std::stringstream ss(line);
+        std::string token;
+        std::vector<std::string> tokens;
         while (getline(ss, token, ','))
         {
             tokens.push_back(token);
         }
         int wiersze = stoi(tokens[0]);
         int kolumny = stoi(tokens[1]);
-        komorki.resize(wiersze);
+        arkusz.resize(wiersze);
         for (int i = 0; i < wiersze; i++)
         {
-            komorki[i].resize(kolumny);
+            arkusz[i].resize(kolumny);
         }
 
         while (getline(plik, line))
         {
-            stringstream ss(line);
-            vector<string> tokens;
+            std::stringstream ss(line);
+            std::vector<std::string> tokens;
             while (getline(ss, token, ','))
             {
                 tokens.push_back(token);
@@ -193,29 +191,27 @@ void arkusz::wczytajArkusz(string nazwa){
             int kolumna = stoi(tokens[3]);
             if (tokens[0] == "NumericCell")
             {
-                komorki[wiersz][kolumna] = new komorkaflaot();
-                komorki[wiersz][kolumna]->setWartosc(stof(tokens[1]));
+                arkusz[wiersz][kolumna] = new KomorkaFloat();
+                arkusz[wiersz][kolumna]->setWartosc(tokens[1]);
             }
             else if (tokens[0] == "StringCell")
             {
-                komorki[wiersz][kolumna] = new komorkaString();
-                komorki[wiersz][kolumna]->setWartosc(tokens[1]);
+                arkusz[wiersz][kolumna] = new KomorkaStringa();
+                arkusz[wiersz][kolumna]->setWartosc(tokens[1]);
             }
             else if (tokens[0] == "Cell")
             {
-                komorki[wiersz][kolumna] = new komorkaString();
-                komorki[wiersz][kolumna]->setWartosc("");
+                arkusz[wiersz][kolumna] = new KomorkaStringa();
+                arkusz[wiersz][kolumna]->setWartosc("");
             }
         }
     }
     plik.close();
 }
 
-arkusz::~arkusz() {
-    for (auto &wiersz : komorki)
-    {
-        for (auto &komorka : wiersz)
-        {
+Arkusz::~Arkusz() {
+    for (auto& wiersz : arkusz) {
+        for (auto& komorka : wiersz) {
             delete komorka;
         }
     }

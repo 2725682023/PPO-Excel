@@ -1,143 +1,130 @@
 #ifndef PPO_EXCEL_ARKUSZ_H
 #define PPO_EXCEL_ARKUSZ_H
 
-#include <iostream>
 #include <vector>
-#include "komorkaString.h"
-#include "komorkaflaot.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include "komorka.h"
+#include "komorkaFloat.h"
+#include "komorkaStringa.h"
 
-using namespace std;
-
-class arkusz {
+class Arkusz {
 private:
-    vector<vector<komorka*>> komorki;
-
-    /*
-        * Sprawdza czy string jest liczbą
-        * @pharm wartosc - string do sprawdzenia
-        * @return true jeżeli jest liczbą, false jeżeli nie jest
-     */
-    bool czyLiczba(const string& wartosc) const;
+    std::vector<std::vector<Komorka*>> arkusz;
 
 public:
     /*
-        * Ustawia wartość komórki jeżeli to string
-        * @pharm wiersz - wiersz
-        * @pharm komumna - kolumna
-        * @pharm wartosc - wartość do ustawienia
+        * Konstruktor domyślny
+        * @param brak
         * @return brak
      */
-    void setWartosc(int wiersz, int kolumna, const string& wartosc);
+    Arkusz() {}
 
     /*
-        * Ustawia wartość komórki jeżeli to string
-        * @pharm wiersz - wiersz
-        * @pharm komumna - kolumna
-        * @pharm wartosc - wartość do ustawienia
+        * Dodaje komumnę na koniec arkusza
+        * @param brak
         * @return brak
      */
-    void setWartosc(int wiersz, int kolumna, const float wartosc);
+    void dodajKolumne();
 
     /*
-        * Zwracanie wartości jeżeli jest stringiem
-        * @pharm wiersz - wiersz
-        * @pharm komumna - kolumna
-        * @return wartość komórki
-     */
-    string getWartoscString(int wiersz, int kolumna) const;
-
-    /*
-        * Zwracanie wartości jeżeli jest floatem
-        * @pharm wiersz - wiersz
-        * @pharm komumna - kolumna
-        * @return wartość komórki
-     */
-    float getWartoscFloat(int wiersz, int kolumna) const;
-
-    /*
-        * Wyświatlanie wszystkie komóki
-        * @pharm brak
-        * @return brak
-     */
-    void wyswietl() const;
-
-    /*
-        * Usuwa wybrany wiersz
-        * @pharm wiersz - wiersz
-        * @return brak
-     */
-    void usunWiersz(int wiersz);
-
-    /*
-        * Usuwa wybraną komumnę
-        * @pharm kolumna - kolumna
-        * @return brak
-     */
-    void usunKolumne(int kolumna);
-
-    /*
-        * Dodaje wiersz
-        * @pharm brak
+        * Dodaje wiersz na dole arkusza
+        * @param brak
         * @return brak
      */
     void dodajWiersz();
 
     /*
-        * Dodaje komumnę
-        * @pharm brak
+        * Usuwa wybraną komumnę
+        * @param kolumna - kolumna do usunięcia
         * @return brak
      */
-    void dodajKolune();
+    void usunKolumne(int kolumna);
+
+    /*
+        * Usuwa wybrany wiersz
+        * @param wiersz - wiersz do usunięcia
+        * @return brak
+     */
+    void usunWiersz(int wiersz);
+
+    /*
+        * Sprawdza czy string jest liczbą
+        * @param wartosc - string do sprawdzenia
+        * @return true jeżeli jest liczbą, false jeżeli nie jest
+     */
+    bool czyLiczba(const std::string& wartosc) const;
+
+    /*
+        * Ustawia wartość komórki na podstawie podanych parametrów
+        * @param wartosc - wartość do ustawienia
+        * @param wiersz - wiersz
+        * @param komumna - kolumna
+        * @return brak
+     */
+    void wprowadzDane(const std::string& wartosc, int wiersz, int kolumna);
+
+    /*
+        * Zwraca sumę komórek jeżeli są liczbami, jeżeli są stringami zwraca je połączone, jeżeli są różne zwraca "Błąd"
+        * @param wiersz_pocz - wiersz początkowy
+        * @param kolumna_pocz - kolumna początkowa
+        * @param wiersz_kon - wiersz końcowy
+        * @param kolumna_kon - kolumna końcowa
+        * @return suma komórek
+     */
+    std::string sumujZakres(int wiersz_pocz, int kolumna_pocz, int wiersz_kon, int kolumna_kon);
+
+    /*
+        * Zwraca średnią komórek jeżeli są liczbami
+        * @param wiersz_pocz - wiersz początkowy
+        * @param kolumna_pocz - kolumna początkowa
+        * @param wiersz_kon - wiersz końcowy
+        * @param kolumna_kon - kolumna końcowa
+        * @return średnia komórek
+     */
+    std::string sredniaZakres(int wiersz_pocz, int kolumna_pocz, int wiersz_kon, int kolumna_kon);
+
+    /*
+        * Wyświatlanie wszystkich komórek arkusza
+        * @param brak
+        * @return brak
+     */
+    void wypiszArkusz();
+
+    /*
+        * Wypisuje rozmiar arkusza - funkcja pomocnicza
+        * @param brak
+        * @return brak
+     */
+    void rozmiarArkusza();
 
     /*
         * Zwraca rodzaj komórki
-        * @pharm wiersz - wiersz
-        * @pharm kolumna - kolumna
+        * @param wiersz - wiersz
+        * @param kolumna - kolumna
         * @return rodzaj komórki
      */
-    string getRodzajKomorki(int wiersz, int kolumna) const;
-
-    /*
-        * Zwraca sumę komórek
-        * @pharm wiersz1 - wiersz początkowy
-        * @pharm kolumna1 - kolumna początkowa
-        * @pharm wiersz2 - wiersz końcowy
-        * @pharm kolumna2 - kolumna końcowa
-        * @return suma komórek
-     */
-    float sum(int wiersz1, int kolumna1, int wiersz2, int kolumna2) const;
-
-    /*
-        * Zwraca średnią komórek
-        * @pharm wiersz1 - wiersz początkowy
-        * @pharm kolumna1 - kolumna początkowa
-        * @pharm wiersz2 - wiersz końcowy
-        * @pharm kolumna2 - kolumna końcowa
-        * @return średnia komórek
-     */
-    float srednia(int wiersz1, int kolumna1, int wiersz2, int kolumna2) const;
+    std::string getRodzajKomorki(int wiersz, int kolumna) const;
 
     /*
         * Zapisuje arkusz do pliku
-        * @pharm nazwa - nazwa pliku
+        * @param nazwa - nazwa pliku
         * @return none
      */
-    void zapiszArkusz(string nazwa) const;
+    void zapiszArkusz(std:: string nazwa) const;
 
     /*
         * Wczytuje arkusz z pliku
-        * @pharm nazwa - nazwa pliku
+        * @param nazwa - nazwa pliku
         * @return none
      */
-    void wczytajArkusz(string nazwa);
+    void wczytajArkusz(std::string nazwa);
 
     /*
         * Destruktor
      */
-    ~arkusz();
-
-
+    ~Arkusz();
 };
-
 
 #endif //PPO_EXCEL_ARKUSZ_H

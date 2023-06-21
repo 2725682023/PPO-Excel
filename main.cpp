@@ -19,7 +19,7 @@ void menuglowne() {
 }
 int main()
 {
-    arkusz arkusz1;
+    Arkusz arkusz1;
 
     int x;
     cout << "Witaj w programie!!!" << endl;
@@ -34,13 +34,13 @@ int main()
             arkusz1.wczytajArkusz(nazwaPliku);
 
             cout << "Wczytany arkusz: " << endl;
-            arkusz1.wyswietl();
+            arkusz1.wypiszArkusz();
             break;
         }
         case 0: {
-            arkusz1.dodajKolune();
-            arkusz1.dodajKolune();
-            arkusz1.dodajKolune();
+            arkusz1.dodajKolumne();
+            arkusz1.dodajKolumne();
+            arkusz1.dodajKolumne();
             arkusz1.dodajWiersz();
             arkusz1.dodajWiersz();
             arkusz1.dodajWiersz();
@@ -62,11 +62,11 @@ int main()
         cin >> wybor;
         switch (wybor) {
             case 1: {
-                arkusz1.wyswietl();
+                arkusz1.wypiszArkusz();
                 break;
             }
             case 2: {
-                arkusz1.dodajKolune();
+                arkusz1.dodajKolumne();
                 break;
             }
             case 3: {
@@ -97,15 +97,15 @@ int main()
                 cout << "Jaki typ zmiennej chcesz wprowadzic? (1 - double, 2 - string)" << endl;
                 cin >> wybor2;
                 if (wybor2 == 1){
-                    float zmienna;
+                    string zmienna;
                     cout << "Podaj zmienna: " << endl;
                     cin >> zmienna;
-                    arkusz1.setWartosc(wiersz, kolumna, zmienna);
+                    arkusz1.wprowadzDane(zmienna, wiersz, kolumna );
                 } else if (wybor2 == 2){
                     string zmienna;
                     cout << "Podaj zmienna: " << endl;
                     cin >> zmienna;
-                    arkusz1.setWartosc(wiersz, kolumna, zmienna);
+                    arkusz1.wprowadzDane(zmienna, wiersz, kolumna);
                 } else {
                     cout << "Arkusz nie obsluguje takich typow zmiennych!!!" << endl;
                 }
@@ -117,7 +117,7 @@ int main()
                 cin >> wiersz1 >> kolumna1;
                 cout << "Podaj koncowa komorke (kolejnosc: wiersz kolumna): " << endl;
                 cin >> wiersz2 >> kolumna2;
-                cout << "Suma: " << arkusz1.sum(wiersz1, wiersz2, kolumna1, kolumna2) << endl;
+                cout << "Suma: " << arkusz1.sumujZakres(wiersz1, wiersz2, kolumna1, kolumna2) << endl;
                 break;
             }
             case 8: {
@@ -126,7 +126,7 @@ int main()
                 cin >> wiersz1 >> kolumna1;
                 cout << "Podaj koncowa komorke (kolejnosc: wiersz kolumna): " << endl;
                 cin >> wiersz2 >> kolumna2;
-                cout << "Srednia: " << arkusz1.srednia(wiersz1, wiersz2, kolumna1, kolumna2) << endl;
+                cout << "Srednia: " << arkusz1.sredniaZakres(wiersz1, wiersz2, kolumna1, kolumna2) << endl;
                 break;
             }
             case 9: {
